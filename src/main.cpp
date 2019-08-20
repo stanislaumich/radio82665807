@@ -136,11 +136,7 @@ void loop(void) {
   if(enabled){
   if (currentMillis - previousMillis >= interval) {
     previousMillis = currentMillis;
-    //if (ledState == LOW) {
-    //  ledState = HIGH;  // Note that this switches the LED *off*
-    //} else {
-    //  ledState = LOW;  // Note that this switches the LED *on*
-    // }
+
     ledState =!ledState;
     digitalWrite(LED_BUILTIN, ledState);
   }
