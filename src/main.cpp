@@ -6,6 +6,7 @@
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include <stasradio.h>
+#include <EEPROM.h>
 
 #ifndef STASSID
 #define STASSID "SAN"
@@ -28,7 +29,12 @@ const char* serverIndex = "<font size=40><form method='POST' action='/update' en
 const char* volindex = "<font size=40><a href='/'>MAIN</a> <a href='/vol+'>(+)</a> <a href='/vol-'>(-)</a> VOL=";
 
 void setup(void) {
-  
+  EEPROM.begin(512);
+  vol = EEPROM.read(voladdr);
+  int t1=EEPROM.read(frqaddr1);
+  int t2=EEPROM.read(frqaddr2);
+  frq=t1*256+t2;
+  //EEPROM.write(addr, val);
   pinMode(LED_BUILTIN, OUTPUT); 
   Serial.begin(9600);
   Serial.println();
@@ -47,6 +53,7 @@ void setup(void) {
       vol+=1;
       if (vol>volmax){vol=volmax;}
       setvol(vol);
+      EEPROM.write(voladdr, vol);
       server.send(200, "text/html", volindex+String(vol)+"</font>");
     });
     server.on("/vol-", HTTP_GET, []() {
@@ -54,6 +61,7 @@ void setup(void) {
       vol-=1;
       if (vol<0){vol=0;}
       setvol(vol);
+      EEPROM.write(voladdr, vol);
       server.send(200, "text/html", volindex+String(vol)+"</font>");
     });
     server.on("/update", HTTP_POST, []() {
@@ -87,10 +95,8 @@ void setup(void) {
     server.begin();
     //MDNS.addService("http", "tcp", 80);
 
-    Serial.print("IP address: ");
+    Serial.print("IP address: http://");
     Serial.println(WiFi.localIP());
-
-    Serial.printf("Ready! Open http://%s.local in your browser\n", host);
     digitalWrite(LED_BUILTIN, 0);
   } else {
     Serial.println("WiFi Failed");
