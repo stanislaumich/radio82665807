@@ -3,6 +3,7 @@
 */
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
+//#include <ESP8266WiFiMulti.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include <stasradio.h>
@@ -19,13 +20,18 @@ const char* host = "esp8266radio";
 const char* ssid = STASSID;
 const char* password = STAPSK;
 
+long currentMillis;
+long previousMillis;
+long interval=100;
+bool enabled=false;
 
 
 
+//ESP8266WiFiMulti WiFiMulti;
 
 int ledState = HIGH;
 ESP8266WebServer server(80);
-const char* serverIndex = "<font size=40><form method='POST' action='/update' enctype='multipart/form-data'><input type='file' name='update'><input type='submit' value='Update'></form><br><br>VOLUME <a href='/vol+'>(+)</a> <a href='/vol-'>(-)</a>"; 
+const char* serverIndex = "<font size=40><form method='POST' action='/update' enctype='multipart/form-data'><input type='file' name='update'><input type='submit' value='Update'></form><br><br>VOLUME <a href='/vol+'>(+)</a> <a href='/vol-'>(-)</a><br><br>VOL="; 
 const char* volindex = "<font size=40><a href='/'>MAIN</a> <a href='/vol+'>(+)</a> <a href='/vol-'>(-)</a> VOL=";
 
 void setup(void) {
@@ -36,17 +42,25 @@ void setup(void) {
   frq=t1*256+t2;
   //EEPROM.write(addr, val);
   pinMode(LED_BUILTIN, OUTPUT); 
-  Serial.begin(9600);
+  Serial.begin(74880);
   Serial.println();
   Serial.println("Booting Sketch...");
   WiFi.mode(WIFI_AP_STA);
-  WiFi.begin(ssid, password);
 
+  //WiFiMulti.addAP("ZTE54", "121211119");
+  //WiFiMulti.addAP("Stas", "121211119");
+  //WiFiMulti.addAP("SAN", "37212628");
+
+  WiFi.begin(ssid, password);
+  //while (tries>0)
+  //{
+  
   if (WiFi.waitForConnectResult() == WL_CONNECTED) {
+  //if ((WiFiMulti.run() == WL_CONNECTED)) {
     //MDNS.begin(host);
     server.on("/", HTTP_GET, []() {
       server.sendHeader("Connection", "close");
-      server.send(200, "text/html", serverIndex);
+      server.send(200, "text/html", serverIndex+String(vol));
     });
     server.on("/vol+", HTTP_GET, []() {
       server.sendHeader("Connection", "close");
@@ -54,6 +68,7 @@ void setup(void) {
       if (vol>volmax){vol=volmax;}
       setvol(vol);
       EEPROM.write(voladdr, vol);
+      EEPROM.commit(); 
       server.send(200, "text/html", volindex+String(vol)+"</font>");
     });
     server.on("/vol-", HTTP_GET, []() {
@@ -62,6 +77,7 @@ void setup(void) {
       if (vol<0){vol=0;}
       setvol(vol);
       EEPROM.write(voladdr, vol);
+      EEPROM.commit(); 
       server.send(200, "text/html", volindex+String(vol)+"</font>");
     });
     server.on("/update", HTTP_POST, []() {
@@ -98,16 +114,26 @@ void setup(void) {
     Serial.print("IP address: http://");
     Serial.println(WiFi.localIP());
     digitalWrite(LED_BUILTIN, 0);
+    interval=2000;
+    enabled=true;
   } else {
-    Serial.println("WiFi Failed");
+    Serial.println("WiFi Failed - ");
+    //Serial.println(tries);
     digitalWrite(LED_BUILTIN, 1);
+    enabled=false;
+    interval=5000;
   }
+ //tries-=1;
+ //S}
+ 
+
 }
 
 void loop(void) {
   server.handleClient();
   //MDNS.update();
-  /*unsigned long currentMillis = millis();
+  unsigned long currentMillis = millis();
+  if(enabled){
   if (currentMillis - previousMillis >= interval) {
     previousMillis = currentMillis;
     //if (ledState == LOW) {
@@ -118,13 +144,7 @@ void loop(void) {
     ledState =!ledState;
     digitalWrite(LED_BUILTIN, ledState);
   }
-*/
-  /*if (v==255) {dir=-1;}
-  if (v==0) {dir=1;}
-  v+=dir;
-  analogWrite(LED_BUILTIN,v);
-  delay(2);
- */
+  }
 	
 
 
