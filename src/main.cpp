@@ -8,14 +8,14 @@
 #include <ESP8266WebServer.h>
 #include <stasradio.h>
 #include <EEPROM.h>
+#include <ssid.h>
 
-#ifndef STASSID
-#define STASSID "SAN"
-#define STAPSK  "37212628"
-#endif
 
 #define LED_BUILTIN 2
-
+#ifndef STASSID
+#define STASSID "ZTE54"
+#define STAPSK  "121211119"
+#endif
 const char* host = "esp8266radio";
 const char* ssid = STASSID;
 const char* password = STAPSK;
