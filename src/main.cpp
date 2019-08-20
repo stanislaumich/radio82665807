@@ -9,7 +9,7 @@
 #include <stasradio.h>
 #include <EEPROM.h>
 #include <ssid.h>
-
+//дома....
 
 #define LED_BUILTIN 2
 #ifndef STASSID
