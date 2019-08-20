@@ -24,10 +24,11 @@ const char* password = STAPSK;
 
 int ledState = HIGH;
 ESP8266WebServer server(80);
-const char* serverIndex = "<form method='POST' action='/update' enctype='multipart/form-data'><input type='file' name='update'><input type='submit' value='Update'></form>";
+const char* serverIndex = "<font size=40><form method='POST' action='/update' enctype='multipart/form-data'><input type='file' name='update'><input type='submit' value='Update'></form><br><br>VOLUME <a href='/vol+'>(+)</a> <a href='/vol-'>(-)</a>"; 
 const char* volindex = "<font size=40><a href='/'>MAIN</a> <a href='/vol+'>(+)</a> <a href='/vol-'>(-)</a> VOL=";
 
 void setup(void) {
+  
   pinMode(LED_BUILTIN, OUTPUT); 
   Serial.begin(9600);
   Serial.println();
