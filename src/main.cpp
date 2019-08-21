@@ -32,20 +32,27 @@ ESP8266WebServer server(80);
 
 void setup(void) {
   Serial.begin(74880);
+  Serial.println();
+  Serial.println("Loading EEPROM...");
   EEPROM.begin(512);
+
   vol = EEPROM.read(voladdr);
   int t1=EEPROM.read(frqaddr1);
   int t2=EEPROM.read(frqaddr2);
   frq=t1*256+t2;
+  Serial.println();
+  Serial.print("VOL=");
   Serial.println(vol);
-  Serial.println(t1);
-  Serial.println(t2);
-  Serial.println(frq);
+  Serial.print("t1=");
+  Serial.println(vol);
+  Serial.print("t2=");
+  Serial.println(vol);
+  Serial.print("FRQ=");
+  Serial.println(vol);
   //EEPROM.write(addr, val);
   pinMode(LED_BUILTIN, OUTPUT); 
   
-  Serial.println();
-  Serial.println("Booting Sketch...");
+  
   WiFi.mode(WIFI_AP_STA);
 
   //WiFiMulti.addAP("ZTE54", "121211119");
@@ -61,7 +68,7 @@ void setup(void) {
     //MDNS.begin(host);
     server.on("/", HTTP_GET, []() {
       server.sendHeader("Connection", "close");
-      server.send(200, "text/html", serverIndex+"VOL="+String(vol)+"   FRQ="+String(frq));
+      server.send(200, "text/html", serverIndex+String(vol)+String("-")+String(frq));
     });///////////////////////////////////////////////////////////////////////////////////
     server.on("/vol+", HTTP_GET, []() {
       server.sendHeader("Connection", "close");
