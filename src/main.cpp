@@ -31,14 +31,19 @@ int ledState = HIGH;
 ESP8266WebServer server(80);
 
 void setup(void) {
+  Serial.begin(74880);
   EEPROM.begin(512);
   vol = EEPROM.read(voladdr);
   int t1=EEPROM.read(frqaddr1);
   int t2=EEPROM.read(frqaddr2);
   frq=t1*256+t2;
+  Serial.println(vol);
+  Serial.println(t1);
+  Serial.println(t2);
+  Serial.println(frq);
   //EEPROM.write(addr, val);
   pinMode(LED_BUILTIN, OUTPUT); 
-  Serial.begin(74880);
+  
   Serial.println();
   Serial.println("Booting Sketch...");
   WiFi.mode(WIFI_AP_STA);
@@ -81,8 +86,13 @@ void setup(void) {
       frq+=frqstep;
       if (vol>frqmax){frq=frqmax;}
       setfrq(frq);
-      EEPROM.write(frqaddr1, frq);
-      EEPROM.write(frqaddr2, frq);
+      int t2=frq % 256;
+      int t1=(frq-t2)/256;
+      EEPROM.write(frqaddr1, t1);
+      EEPROM.write(frqaddr2, t2);
+      Serial.println(t1);
+      Serial.println(t2);
+      Serial.println(frq);
       EEPROM.commit(); 
       server.send(200, "text/html", frqindex+String(frq)+" VOL="+String(vol)+"</font>");
     });
@@ -91,8 +101,13 @@ void setup(void) {
       frq-=frqstep;
       if (frq<frqmin){frq=frqmin;}
       setfrq(frq);
-      EEPROM.write(frqaddr1, frq);
-      EEPROM.write(frqaddr2, frq);
+      int t2=frq % 256;
+      int t1=(frq-t2)/256;
+      EEPROM.write(frqaddr1, t1);
+      EEPROM.write(frqaddr2, t2);
+      Serial.println(t1);
+      Serial.println(t2);
+      Serial.println(frq);
       EEPROM.commit(); 
       server.send(200, "text/html", frqindex+String(frq)+" VOL="+String(vol)+"</font>");
     });///////////////////////////////////////////////////////////////////////////////////
