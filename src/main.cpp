@@ -97,9 +97,10 @@ void setup(void) {
       int t1=(frq-t2)/256;
       EEPROM.write(frqaddr1, t1);
       EEPROM.write(frqaddr2, t2);
-      Serial.println(t1);
-      Serial.println(t2);
-      Serial.println(frq);
+      Serial.print("t1");Serial.println(t1);
+      Serial.print("t2");Serial.println(t2);
+      Serial.print("frq");Serial.println(frq);
+      Serial.println("Wroted");
       EEPROM.commit(); 
       server.send(200, "text/html", frqindex+String(frq)+" VOL="+String(vol)+"</font>");
     });
@@ -112,9 +113,10 @@ void setup(void) {
       int t1=(frq-t2)/256;
       EEPROM.write(frqaddr1, t1);
       EEPROM.write(frqaddr2, t2);
-      Serial.println(t1);
-      Serial.println(t2);
-      Serial.println(frq);
+      Serial.print("t1");Serial.println(t1);
+      Serial.print("t2");Serial.println(t2);
+      Serial.print("frq");Serial.println(frq);
+      Serial.println("Wroted");
       EEPROM.commit(); 
       server.send(200, "text/html", frqindex+String(frq)+" VOL="+String(vol)+"</font>");
     });///////////////////////////////////////////////////////////////////////////////////
