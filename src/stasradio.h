@@ -39,6 +39,17 @@ const char* frqindex = "<font size=40><a href='/'>MAIN</a> FRQ <a href='/frq+'>(
 
 ////////////////////////////////////////////////////////////////////////
 //
+// переменные для работы для настройки радио
+//
+////////////////////////////////////////////////////////////////////////
+
+#define FIX_BAND     RADIO_BAND_FM   ///< The band that will be tuned by this sketch is FM.
+#define FIX_STATION  10340            ///< The station that will be tuned by this sketch is 103.40 MHz.
+#define FIX_VOLUME   1               ///< The volume that will be set by this sketch is level 4.
+
+
+////////////////////////////////////////////////////////////////////////
+//
 // функции для работы для настройки радио
 //
 ////////////////////////////////////////////////////////////////////////
