@@ -9,7 +9,7 @@
 #include <stasradio.h>
 #include <EEPROM.h>
 #include <ssid.h>
-//дома....
+//работа....
 
 #define LED_BUILTIN 2
 #ifndef STASSID
@@ -20,19 +20,15 @@ const char* host = "esp8266radio";
 const char* ssid = STASSID;
 const char* password = STAPSK;
 
-long currentMillis;
-long previousMillis;
-long interval=100;
+unsigned long currentMillis;
+unsigned long previousMillis;
+unsigned long interval=100;
 bool enabled=false;
-
-
 
 //ESP8266WiFiMulti WiFiMulti;
 
 int ledState = HIGH;
 ESP8266WebServer server(80);
-const char* serverIndex = "<font size=40><form method='POST' action='/update' enctype='multipart/form-data'><input type='file' name='update'><input type='submit' value='Update'></form><br><br>VOLUME <a href='/vol+'>(+)</a> <a href='/vol-'>(-)</a><br><br>VOL="; 
-const char* volindex = "<font size=40><a href='/'>MAIN</a> <a href='/vol+'>(+)</a> <a href='/vol-'>(-)</a> VOL=";
 
 void setup(void) {
   EEPROM.begin(512);
@@ -60,8 +56,8 @@ void setup(void) {
     //MDNS.begin(host);
     server.on("/", HTTP_GET, []() {
       server.sendHeader("Connection", "close");
-      server.send(200, "text/html", serverIndex+String(vol));
-    });
+      server.send(200, "text/html", serverIndex+"VOL="+String(vol)+"   FRQ="+String(frq));
+    });///////////////////////////////////////////////////////////////////////////////////
     server.on("/vol+", HTTP_GET, []() {
       server.sendHeader("Connection", "close");
       vol+=1;
@@ -69,7 +65,7 @@ void setup(void) {
       setvol(vol);
       EEPROM.write(voladdr, vol);
       EEPROM.commit(); 
-      server.send(200, "text/html", volindex+String(vol)+"</font>");
+      server.send(200, "text/html", volindex+String(vol)+" FRQ="+String(frq)+"</font>");
     });
     server.on("/vol-", HTTP_GET, []() {
       server.sendHeader("Connection", "close");
@@ -78,8 +74,28 @@ void setup(void) {
       setvol(vol);
       EEPROM.write(voladdr, vol);
       EEPROM.commit(); 
-      server.send(200, "text/html", volindex+String(vol)+"</font>");
+      server.send(200, "text/html", volindex+String(vol)+" FRQ="+String(frq)+"</font>");
+    });///////////////////////////////////////////////////////////////////////////////////
+    server.on("/frq+", HTTP_GET, []() {
+      server.sendHeader("Connection", "close");
+      frq+=frqstep;
+      if (vol>frqmax){frq=frqmax;}
+      setfrq(frq);
+      EEPROM.write(frqaddr1, frq);
+      EEPROM.write(frqaddr2, frq);
+      EEPROM.commit(); 
+      server.send(200, "text/html", frqindex+String(frq)+" VOL="+String(vol)+"</font>");
     });
+    server.on("/frq-", HTTP_GET, []() {
+      server.sendHeader("Connection", "close");
+      frq-=frqstep;
+      if (frq<frqmin){frq=frqmin;}
+      setfrq(frq);
+      EEPROM.write(frqaddr1, frq);
+      EEPROM.write(frqaddr2, frq);
+      EEPROM.commit(); 
+      server.send(200, "text/html", frqindex+String(frq)+" VOL="+String(vol)+"</font>");
+    });///////////////////////////////////////////////////////////////////////////////////
     server.on("/update", HTTP_POST, []() {
       server.sendHeader("Connection", "close");
       server.send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
