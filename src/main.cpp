@@ -6,12 +6,12 @@
 //#include <ESP8266WiFiMulti.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
-#include <stasradio.h>
+#include "stasradio.h"
 #include <EEPROM.h>
-#include <ssid.h>
-#include <radio.h>
-#include <RDA5807M.h>
-//дом....
+#include "ssid.h"
+#include "radio.h"
+#include "RDA5807M.h"
+//Работа....
 
 #define LED_BUILTIN 2
 #ifndef STASSID
@@ -31,7 +31,21 @@ RDA5807M radio;    // Create an instance of Class for RDA5807M Chip
 
 int ledState = HIGH;
 ESP8266WebServer server(80);
+///////////////////////////////////////////////////////////////////////////////////////////////////////////  
 
+void setvol(int vol)
+{
+ radio.setVolume(vol);
+ //EEPROM.write(voladdr, vol);
+}
+
+void setfrq(int frq)
+{
+ radio.setBandFrequency(FIX_BAND, frq);
+ //EEPROM.write(voladdr, vol);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////  
 void setup(void) {
   Serial.begin(74880);
   Serial.println();
@@ -62,8 +76,8 @@ void setup(void) {
   radio.debugEnable();
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Set all radio setting to the fixed values.
-  radio.setBandFrequency(FIX_BAND, FIX_STATION);
-  radio.setVolume(FIX_VOLUME);
+  radio.setBandFrequency(FIX_BAND, frq);
+  radio.setVolume(vol);
   radio.setMono(true);
   radio.setMute(false);
 
@@ -115,6 +129,23 @@ void setup(void) {
       server.sendHeader("Connection", "close");
       frq-=frqstep;
       if (frq<frqmin){frq=frqmin;}
+      setfrq(frq);
+      int t2=frq % 256;
+      int t1=(frq-t2)/256;
+      EEPROM.write(frqaddr1, t1);
+      EEPROM.write(frqaddr2, t2);
+      Serial.print("t1");Serial.println(t1);
+      Serial.print("t2");Serial.println(t2);
+      Serial.print("frq");Serial.println(frq);
+      Serial.println("Wroted");
+      EEPROM.commit(); 
+      server.send(200, "text/html", frqindex+String(frq)+" VOL="+String(vol)+"</font>");
+    });///////////////////////////////////////////////////////////////////////////////////
+    // String dir = server.arg("dir");
+    server.on("/s", HTTP_GET, []() {
+      server.sendHeader("Connection", "close");
+      String frqs = server.arg("frq");
+      frq=frqs.toInt();
       setfrq(frq);
       int t2=frq % 256;
       int t1=(frq-t2)/256;
@@ -192,6 +223,7 @@ void loop(void) {
   
     Serial.print("Audio:"); 
     radio.debugAudioInfo();
+    Serial.println(WiFi.localIP());
   }
   }
 	

@@ -3,6 +3,9 @@
 // переменные базовые и для работы для настройки радио
 //
 ////////////////////////////////////////////////////////////////////////
+//#include "radio.h"
+//#include "RDA5807M.h"
+
 #ifndef stasradio
 #define stasradio
 #endif
@@ -18,7 +21,7 @@ static volatile  int voladdr = 1; // громкость адрес в eeprom
 static volatile  int frqmin = 860; // частота мин
 static volatile  int frqmax = 1080; // частота мах
 static volatile  int frq = 1043; // частота
-static volatile  int frqstep = 1; // частота шаг
+static volatile  int frqstep = 10; // частота шаг
 static volatile  int frqaddr1 = 2; // частота адрес в eeprom 1я*256+2я ячейка, 1043=1024+17, 1=4, 2=17
 static volatile  int frqaddr2 = 3; // частота адрес в eeprom
 
@@ -53,14 +56,3 @@ const char* frqindex = "<font size=40><a href='/'>MAIN</a> FRQ <a href='/frq+'>(
 // функции для работы для настройки радио
 //
 ////////////////////////////////////////////////////////////////////////
-void setvol(int vol)
-{
- int t = vol;
- //EEPROM.write(voladdr, vol);
-}
-
-void setfrq(int frq)
-{
- int t = frq;
- //EEPROM.write(voladdr, vol);
-}
