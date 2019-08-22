@@ -9,7 +9,9 @@
 #include <stasradio.h>
 #include <EEPROM.h>
 #include <ssid.h>
-//работа....
+#include <radio.h>
+#include <RDA5807M.h>
+//дом....
 
 #define LED_BUILTIN 2
 #ifndef STASSID
@@ -22,10 +24,10 @@ const char* password = STAPSK;
 
 unsigned long currentMillis;
 unsigned long previousMillis;
-unsigned long interval=100;
+unsigned long interval=200;
 bool enabled=false;
 
-//ESP8266WiFiMulti WiFiMulti;
+RDA5807M radio;    // Create an instance of Class for RDA5807M Chip
 
 int ledState = HIGH;
 ESP8266WebServer server(80);
@@ -52,20 +54,25 @@ void setup(void) {
   //EEPROM.write(addr, val);
   pinMode(LED_BUILTIN, OUTPUT); 
   
-  
+
+ // Initialize the Radio 
+  radio.init();
+
+  // Enable information to the Serial port
+  radio.debugEnable();
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Set all radio setting to the fixed values.
+  radio.setBandFrequency(FIX_BAND, FIX_STATION);
+  radio.setVolume(FIX_VOLUME);
+  radio.setMono(true);
+  radio.setMute(false);
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////  
   WiFi.mode(WIFI_AP_STA);
 
-  //WiFiMulti.addAP("ZTE54", "121211119");
-  //WiFiMulti.addAP("Stas", "121211119");
-  //WiFiMulti.addAP("SAN", "37212628");
-
   WiFi.begin(ssid, password);
-  //while (tries>0)
-  //{
   
   if (WiFi.waitForConnectResult() == WL_CONNECTED) {
-  //if ((WiFiMulti.run() == WL_CONNECTED)) {
-    //MDNS.begin(host);
     server.on("/", HTTP_GET, []() {
       server.sendHeader("Connection", "close");
       server.send(200, "text/html", serverIndex+String(vol)+String("-")+String(frq));
@@ -149,36 +156,42 @@ void setup(void) {
       yield();
     });
     server.begin();
-    //MDNS.addService("http", "tcp", 80);
 
     Serial.print("IP address: http://");
     Serial.println(WiFi.localIP());
     digitalWrite(LED_BUILTIN, 0);
-    interval=2000;
+    interval=3000;
     enabled=true;
   } else {
-    Serial.println("WiFi Failed - ");
-    //Serial.println(tries);
+    Serial.println("WiFi Failed :( ");
+
     digitalWrite(LED_BUILTIN, 1);
     enabled=false;
     interval=5000;
   }
- //tries-=1;
- //S}
- 
 
 }
 
 void loop(void) {
   server.handleClient();
-  //MDNS.update();
+
   unsigned long currentMillis = millis();
   if(enabled){
   if (currentMillis - previousMillis >= interval) {
     previousMillis = currentMillis;
-
     ledState =!ledState;
     digitalWrite(LED_BUILTIN, ledState);
+
+    char s[12];
+    radio.formatFrequency(s, sizeof(s));
+    Serial.print("Station:"); 
+    Serial.println(s);
+  
+    Serial.print("Radio:"); 
+    radio.debugRadioInfo();
+  
+    Serial.print("Audio:"); 
+    radio.debugAudioInfo();
   }
   }
 	
