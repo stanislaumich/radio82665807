@@ -37,6 +37,7 @@ static volatile int tries = 50; // попыток соединиться с ва
 const char* serverIndex = "<font size=40><form method='POST' action='/update' enctype='multipart/form-data'><input type='file' name='update'><input type='submit' value='Update'></form><br><br>VOLUME <a href='/vol+'>(+)</a> <a href='/vol-'>(-)</a><br><br>FRQ <a href='/frq+'>(+)</a> <a href='/frq-'>(-)</a><br><br>"; 
 const char* volindex = "<font size=40><a href='/'>MAIN</a> VOL <a href='/vol+'>(+)</a> <a href='/vol-'>(-)</a> VOL=";
 const char* frqindex = "<font size=40><a href='/'>MAIN</a> FRQ <a href='/frq+'>(+)</a> <a href='/frq-'>(-)</a> FRQ=";
+const char* helpindex = "<font size=40><form method='POST' action='/update' enctype='multipart/form-data'><input type='file' name='update'><input type='submit' value='Update'></form><br><br>VOLUME <a href='/vol+'>(+)</a> <a href='/vol-'>(-)</a><br><br>FRQ <a href='/frq+'>(+)</a> <a href='/frq-'>(-)</a><br><br>"; 
 
 
 

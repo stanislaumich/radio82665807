@@ -80,7 +80,12 @@ void setup(void) {
   radio.setVolume(vol);
   radio.setMono(true);
   radio.setMute(false);
-
+  radio.setBassBoost(true);
+  frqmin=radio.getMinFrequency();
+  frqmax=radio.getMaxFrequency();
+  frqstep=radio.getFrequencyStep();
+  // radio.seekUp(bool toNextSender = true);   ///< Start a seek upwards from the current frequency.
+  // radio.seekDown(bool toNextSender = true); 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////  
   WiFi.mode(WIFI_AP_STA);
 
@@ -158,6 +163,42 @@ void setup(void) {
       EEPROM.commit(); 
       server.send(200, "text/html", frqindex+String(frq)+" VOL="+String(vol)+"</font>");
     });///////////////////////////////////////////////////////////////////////////////////
+    server.on("/seekup", HTTP_GET, []() {
+      server.sendHeader("Connection", "close");
+      radio.seekUp(true);   ///< Start a seek upwards from the current frequency.
+      frq=radio.getFrequency;
+      int t2=frq % 256;
+      int t1=(frq-t2)/256;
+      EEPROM.write(frqaddr1, t1);
+      EEPROM.write(frqaddr2, t2);
+      Serial.print("t1");Serial.println(t1);
+      Serial.print("t2");Serial.println(t2);
+      Serial.print("frq");Serial.println(frq);
+      Serial.println("Wroted");
+      EEPROM.commit(); 
+      server.send(200, "text/html", frqindex+String(frq)+" VOL="+String(vol)+"</font>");
+    });
+    server.on("/seekdown", HTTP_GET, []() {
+      server.sendHeader("Connection", "close");
+      radio.seekDown(true);
+      frq=radio.getFrequency;
+      int t2=frq % 256;
+      int t1=(frq-t2)/256;
+      EEPROM.write(frqaddr1, t1);
+      EEPROM.write(frqaddr2, t2);
+      Serial.print("t1");Serial.println(t1);
+      Serial.print("t2");Serial.println(t2);
+      Serial.print("frq");Serial.println(frq);
+      Serial.println("Wroted");
+      EEPROM.commit(); 
+      server.send(200, "text/html", frqindex+String(frq)+" VOL="+String(vol)+"</font>");
+    });///////////////////////////////////////////////////////////////////////////////////
+    server.on("/help", HTTP_GET, []() {
+      server.sendHeader("Connection", "close");
+      
+      server.send(200, "text/html", helpindex);
+    });///////////////////////////////////////////////////////////////////////////////////
+
     server.on("/update", HTTP_POST, []() {
       server.sendHeader("Connection", "close");
       server.send(200, "text/plain", (Update.hasError()) ? "FAIL" : "OK");
