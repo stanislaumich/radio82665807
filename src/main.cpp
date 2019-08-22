@@ -78,7 +78,7 @@ void setup(void) {
   // Set all radio setting to the fixed values.
   radio.setBandFrequency(FIX_BAND, frq);
   radio.setVolume(vol);
-  radio.setMono(true);
+  radio.setMono(false);
   radio.setMute(false);
   radio.setBassBoost(true);
   frqmin=radio.getMinFrequency();
@@ -166,7 +166,8 @@ void setup(void) {
     server.on("/seekup", HTTP_GET, []() {
       server.sendHeader("Connection", "close");
       radio.seekUp(true);   ///< Start a seek upwards from the current frequency.
-      frq=radio.getFrequency;
+      delay(100);
+      frq=radio.getFrequency();
       int t2=frq % 256;
       int t1=(frq-t2)/256;
       EEPROM.write(frqaddr1, t1);
@@ -176,12 +177,13 @@ void setup(void) {
       Serial.print("frq");Serial.println(frq);
       Serial.println("Wroted");
       EEPROM.commit(); 
-      server.send(200, "text/html", frqindex+String(frq)+" VOL="+String(vol)+"</font>");
+      server.send(200, "text/html", serverIndex+String(frq)+" VOL="+String(vol)+"</font>");
     });
     server.on("/seekdown", HTTP_GET, []() {
       server.sendHeader("Connection", "close");
       radio.seekDown(true);
-      frq=radio.getFrequency;
+      delay(100);
+      frq=radio.getFrequency();
       int t2=frq % 256;
       int t1=(frq-t2)/256;
       EEPROM.write(frqaddr1, t1);
@@ -191,8 +193,38 @@ void setup(void) {
       Serial.print("frq");Serial.println(frq);
       Serial.println("Wroted");
       EEPROM.commit(); 
-      server.send(200, "text/html", frqindex+String(frq)+" VOL="+String(vol)+"</font>");
+      server.send(200, "text/html", serverIndex+String(frq)+" VOL="+String(vol)+"</font>");
     });///////////////////////////////////////////////////////////////////////////////////
+    server.on("/fm", HTTP_GET, []() {
+      server.sendHeader("Connection", "close");
+      radio.setBandFrequency(RADIO_BAND_FM, radio.getMinFrequency());
+      radio.setVolume(vol);
+      radio.setMono(false);
+      radio.setMute(false);
+      radio.setBassBoost(true);
+      frqmin=radio.getMinFrequency();
+      frqmax=radio.getMaxFrequency();
+      frqstep=radio.getFrequencyStep();
+      radio.setBandFrequency(RADIO_BAND_FM, frqmin);
+      frq=frqmin;
+      server.send(200, "text/html", serverIndex+String(frq)+" VOL="+String(vol)+"</font>");
+    });
+    server.on("/am", HTTP_GET, []() {
+      server.sendHeader("Connection", "close");
+      radio.setBandFrequency(RADIO_BAND_AM, radio.getMinFrequency());
+      radio.setVolume(vol);
+      radio.setMono(false);
+      radio.setMute(false);
+      radio.setBassBoost(true);
+      frqmin=radio.getMinFrequency();
+      frqmax=radio.getMaxFrequency();
+      frqstep=radio.getFrequencyStep();
+      radio.setBandFrequency(RADIO_BAND_AM, frqmin);
+      frq=frqmin;
+      server.send(200, "text/html", serverIndex+String(frq)+" VOL="+String(vol)+"</font>");
+    });///////////////////////////////////////////////////////////////////////////////////
+
+
     server.on("/help", HTTP_GET, []() {
       server.sendHeader("Connection", "close");
       
