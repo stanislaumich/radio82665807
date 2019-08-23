@@ -10,7 +10,7 @@
 #include <ESP8266WebServer.h>
 #include "stasradio.h"
 #include <EEPROM.h>
-#include "ssid.h"
+//#include "ssid.h"
 #include "radio.h"
 #include "RDA5807M.h"
 #include "Debounce.h"
@@ -18,8 +18,8 @@
 
 #define LED_BUILTIN 2
 #ifndef STASSID
-#define STASSID "ZTE54"
-#define STAPSK  "121211119"
+String STASSID ="ZTE54";
+String STAPSK  ="121211119";
 #endif
 const char* host = "esp8266radio";
 const char* ssid = STASSID;
@@ -30,8 +30,8 @@ unsigned long previousMillis;
 unsigned long interval=200;
 bool enabled=false;
 
-
-
+bool WiFiOk=false;
+String W="";
 
 
 Debounce bstop(pbstop);
@@ -107,6 +107,16 @@ pinMode(pbnext, INPUT_PULLUP);
   WiFi.begin(ssid, password);
   
   if (WiFi.waitForConnectResult() == WL_CONNECTED) {
+   WiFiOk=true;
+   W="HOME";
+  }
+  if (!WiFiOk){
+   STASSID ="SAN";
+   STAPSK  ="37212628";
+   if (WiFi.waitForConnectResult() == WL_CONNECTED) {WiFiOk=true; W="SAN"}
+  }
+
+  if (WiFiOk){
     server.on("/", HTTP_GET, []() {
       server.sendHeader("Connection", "close");
       server.send(200, "text/html", serverIndex+String(vol)+String("-")+String(frq));
