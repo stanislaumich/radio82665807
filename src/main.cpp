@@ -223,7 +223,11 @@ void setup(void) {
       frq=frqmin;
       server.send(200, "text/html", serverIndex+String(frq)+" VOL="+String(vol)+"</font>");
     });///////////////////////////////////////////////////////////////////////////////////
-
+    server.on("/m", HTTP_GET, []() {
+      server.sendHeader("Connection", "close");
+      radio.setMute(!radio.getMute());
+      server.send(200, "text/html", helpindex);
+    });///////////////////////////////////////////////////////////////////////////////////
 
     server.on("/help", HTTP_GET, []() {
       server.sendHeader("Connection", "close");
