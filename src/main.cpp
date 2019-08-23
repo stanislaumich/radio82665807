@@ -94,6 +94,7 @@ void setup(void) {
   if (WiFi.waitForConnectResult() == WL_CONNECTED) {
     server.on("/", HTTP_GET, []() {
       server.sendHeader("Connection", "close");
+      frq=radio.formatFrequency(s,)
       server.send(200, "text/html", serverIndex+String(vol)+String("-")+String(frq));
     });///////////////////////////////////////////////////////////////////////////////////
     server.on("/vol+", HTTP_GET, []() {
