@@ -18,8 +18,8 @@
 
 #define LED_BUILTIN 2
 #ifndef STASSID
-String STASSID ="ZTE54";
-String STAPSK  ="121211119";
+char* STASSID ="ZTE54";
+char* STAPSK  ="121211119";
 #endif
 const char* host = "esp8266radio";
 const char* ssid = STASSID;
@@ -113,7 +113,7 @@ pinMode(pbnext, INPUT_PULLUP);
   if (!WiFiOk){
    STASSID ="SAN";
    STAPSK  ="37212628";
-   if (WiFi.waitForConnectResult() == WL_CONNECTED) {WiFiOk=true; W="SAN"}
+   if (WiFi.waitForConnectResult() == WL_CONNECTED) {WiFiOk=true; W="SAN";}
   }
 
   if (WiFiOk){
