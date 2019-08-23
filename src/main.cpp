@@ -11,7 +11,8 @@
 #include "ssid.h"
 #include "radio.h"
 #include "RDA5807M.h"
-//Дом....
+#include "Debounce.h"
+//Работа....
 
 #define LED_BUILTIN 2
 #ifndef STASSID
@@ -26,6 +27,14 @@ unsigned long currentMillis;
 unsigned long previousMillis;
 unsigned long interval=200;
 bool enabled=false;
+
+
+
+
+
+Debounce bstop(pbstop);
+Debounce bprev(pbprev);
+Debounce bnext(pbnext);
 
 RDA5807M radio;    // Create an instance of Class for RDA5807M Chip
 
@@ -87,6 +96,10 @@ void setup(void) {
   // radio.seekUp(bool toNextSender = true);   ///< Start a seek upwards from the current frequency.
   // radio.seekDown(bool toNextSender = true); 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////  
+pinMode(pbstop, INPUT_PULLUP);
+pinMode(pbprev, INPUT_PULLUP);
+pinMode(pbnext, INPUT_PULLUP);
+///////////////////////////////////////////////////////////////////////////////////////////////////////////  
   WiFi.mode(WIFI_AP_STA);
 
   WiFi.begin(ssid, password);
@@ -94,7 +107,6 @@ void setup(void) {
   if (WiFi.waitForConnectResult() == WL_CONNECTED) {
     server.on("/", HTTP_GET, []() {
       server.sendHeader("Connection", "close");
-      frq=radio.formatFrequency(s,)
       server.send(200, "text/html", serverIndex+String(vol)+String("-")+String(frq));
     });///////////////////////////////////////////////////////////////////////////////////
     server.on("/vol+", HTTP_GET, []() {
@@ -167,7 +179,7 @@ void setup(void) {
     server.on("/seekup", HTTP_GET, []() {
       server.sendHeader("Connection", "close");
       radio.seekUp(true);   ///< Start a seek upwards from the current frequency.
-      delay(100);
+      delay(300);
       frq=radio.getFrequency();
       int t2=frq % 256;
       int t1=(frq-t2)/256;
@@ -183,7 +195,7 @@ void setup(void) {
     server.on("/seekdown", HTTP_GET, []() {
       server.sendHeader("Connection", "close");
       radio.seekDown(true);
-      delay(100);
+      delay(300);
       frq=radio.getFrequency();
       int t2=frq % 256;
       int t1=(frq-t2)/256;
@@ -284,6 +296,10 @@ void setup(void) {
 void loop(void) {
   server.handleClient();
 
+  //bstop.read()?radio.setMute(!radio.getMute()):nop();
+  //bnext.read()?radio.seekUp(true):nop();
+  //bprev.read()?radio.seekDown(true):nop();
+
   unsigned long currentMillis = millis();
   if(enabled){
   if (currentMillis - previousMillis >= interval) {
@@ -302,9 +318,6 @@ void loop(void) {
     Serial.print("Audio:"); 
     radio.debugAudioInfo();
     Serial.println(WiFi.localIP());
+   }
   }
-  }
-	
-
-
 }

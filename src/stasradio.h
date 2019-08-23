@@ -11,7 +11,10 @@
 #endif
 #include <EEPROM.h>
 
-
+// назначение пинов для кнопок управления
+#define pbstop D0
+#define pbprev D3
+#define pbnext D4
 
 static volatile  int volmax = 15; // громкость максимальная
 static volatile  int vol = 2; // громкость
@@ -57,3 +60,7 @@ const char* helpindex = "<font size=40><a href='/'>MAIN</a><br>VOLUME <a href='/
 // функции для работы для настройки радио
 //
 ////////////////////////////////////////////////////////////////////////
+void nop(void)
+{
+    
+}
