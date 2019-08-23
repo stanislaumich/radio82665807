@@ -13,9 +13,9 @@
 
 // назначение пинов для кнопок управления
 #define pbstop D0
-#define pbprev D3
-#define pbnext D4
-
+#define pbprev D1
+#define pbnext D2
+// d3 или d4 это синий моргаль (pin 2)
 static volatile  int volmax = 15; // громкость максимальная
 static volatile  int vol = 2; // громкость
 static volatile  int voladdr = 1; // громкость адрес в eeprom

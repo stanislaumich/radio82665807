@@ -98,9 +98,9 @@ void setup(void) {
   // radio.seekUp(bool toNextSender = true);   ///< Start a seek upwards from the current frequency.
   // radio.seekDown(bool toNextSender = true); 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////  
-//pinMode(pbstop, INPUT_PULLUP);
-//pinMode(pbprev, INPUT_PULLUP);
-//pinMode(pbnext, INPUT_PULLUP);
+pinMode(pbstop, INPUT_PULLUP);
+pinMode(pbprev, INPUT_PULLUP);
+pinMode(pbnext, INPUT_PULLUP);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////  
   WiFi.mode(WIFI_AP_STA);
 
@@ -299,7 +299,7 @@ void loop(void) {
   server.handleClient();
 
   //bstop.read()?radio.setMute(!radio.getMute()):nop();
-  //bnext.read()?radio.seekUp(true):nop();
+  //bnext.read()?radio.seekUp(true):nop();// тут ошибка
   //bprev.read()?radio.seekDown(true):nop();
 
   unsigned long currentMillis = millis();
