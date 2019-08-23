@@ -1,0 +1,110 @@
+// RDA5807M Radio controlled with a TV Remote
+//
+#include <Wire.h>
+#include <IRremote.h>
+ 
+int RECV_PIN = 11; //Connect the IR data pin in 11
+IRrecv irrecv(RECV_PIN);
+decode_results results;
+ 
+int volume = 0; // start with the volume low
+int channellist[]= {999,1029,1021,1079}; // Define some radio stations
+int maxc = 4; // Define the number of radio stations used
+int channel = 2; // Start with a favorite station
+ 
+void setup()
+{
+Wire.begin();
+ 
+Serial.begin(9600);
+ 
+irrecv.enableIRIn(); // Start the receiver
+ 
+radio_init();
+setfreq(channellist[channel]);
+setvolume(volume);
+ 
+}
+void loop() {
+if (irrecv.decode(&results)) {
+ 
+switch (results.value) {
+case 0xE0E0E01F:
+Serial.println("vol up");
+if (volume < 15) {
+volume++;
+setvolume(volume);
+}
+break;
+case 0xE0E0D02F:
+Serial.println("vol down");
+if (volume > 0) {
+volume--;
+setvolume(volume);
+}
+break;
+case 0xE0E048B7:
+Serial.println("chan up");
+if (channel < maxc) {
+channel++;
+setfreq(channellist[channel]);
+}
+break;
+case 0xE0E008F7:
+Serial.println("chan down");
+if (channel > 0) {
+channel--;
+setfreq(channellist[channel]);
+}
+break;
+default:
+Serial.println(results.value, HEX);
+}
+irrecv.resume(); // Receive the next value
+}
+delay(100);
+}
+//===============================
+void setvolume(int thevolume)
+{
+byte volbyte;
+ 
+volbyte = thevolume + 0xD0;
+Wire.beginTransmission(0x11);
+Wire.write(0x05);
+Wire.write(0x84); Wire.write(volbyte);
+Wire.endTransmission();
+delay(500);
+}
+//===============================
+void setfreq(int thefreq)
+{
+int freqB;
+byte freqH, freqL;
+ 
+freqB = thefreq - 870;
+freqH = freqB >> 2;
+freqL = (freqB & 3) <<6;
+ 
+Wire.beginTransmission(0x11);
+Wire.write(0x03);
+Wire.write(freqH); // write frequency into bits 15:6, set tune bit
+Wire.write(freqL + 0x10);
+Wire.endTransmission();
+delay(500);
+}
+//================================
+void radio_init()
+{
+Wire.beginTransmission(0x11); // Device address 0x11 (random access)
+Wire.write(0x02); // Register address 0x02
+Wire.write(0xC0); Wire.write(0x03); // Initialize the settings
+Wire.endTransmission();
+delay(500); // wait 500ms to finalize setup
+ 
+Wire.beginTransmission(0x11); // Device address 0x11 (random access)
+Wire.write(0x02);
+Wire.write(0xC0); Wire.write(0x0D); // Setup radio settings
+Wire.endTransmission();
+delay(500); // wait 500ms to finalize settings
+}
