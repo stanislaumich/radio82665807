@@ -11,7 +11,7 @@
 #include "ssid.h"
 #include "radio.h"
 #include "RDA5807M.h"
-//Работа....
+//Дом....
 
 #define LED_BUILTIN 2
 #ifndef STASSID
