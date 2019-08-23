@@ -14,7 +14,7 @@
 #include "radio.h"
 #include "RDA5807M.h"
 #include "Debounce.h"
-//Работа....
+//Дом....
 
 #define LED_BUILTIN 2
 #ifndef STASSID
