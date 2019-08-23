@@ -265,7 +265,7 @@ void RADIO::debugRadioInfo() {
 void RADIO::debugAudioInfo() {
   AUDIO_INFO info;
   this->getAudioInfo(&info);
-
+  Serial.print(" ");Serial.print(info.volume);
   Serial.print(info.bassBoost ? " BASS"  : " ----");
   Serial.print(info.mute      ? " MUTE"  : " ----");
   Serial.print(info.softmute  ? " SOFTMUTE"  : " --------");

@@ -1,5 +1,7 @@
 /*
   To upload through terminal you can use: curl -F "image=@firmware.bin" esp8266-webupdate.local/update
+  соответствие пинов 8266
+  https://esp8266.ru/forum/threads/sootvetstvie-vyvodov-arduino-vyvodam-nodemcu.1878/
 */
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
@@ -96,9 +98,9 @@ void setup(void) {
   // radio.seekUp(bool toNextSender = true);   ///< Start a seek upwards from the current frequency.
   // radio.seekDown(bool toNextSender = true); 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////  
-pinMode(pbstop, INPUT_PULLUP);
-pinMode(pbprev, INPUT_PULLUP);
-pinMode(pbnext, INPUT_PULLUP);
+//pinMode(pbstop, INPUT_PULLUP);
+//pinMode(pbprev, INPUT_PULLUP);
+//pinMode(pbnext, INPUT_PULLUP);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////  
   WiFi.mode(WIFI_AP_STA);
 
@@ -210,7 +212,7 @@ pinMode(pbnext, INPUT_PULLUP);
     });///////////////////////////////////////////////////////////////////////////////////
     server.on("/fm", HTTP_GET, []() {
       server.sendHeader("Connection", "close");
-      radio.setBandFrequency(RADIO_BAND_FM, radio.getMinFrequency());
+      radio.setBand(RADIO_BAND_FM);
       radio.setVolume(vol);
       radio.setMono(false);
       radio.setMute(false);
@@ -224,7 +226,7 @@ pinMode(pbnext, INPUT_PULLUP);
     });
     server.on("/am", HTTP_GET, []() {
       server.sendHeader("Connection", "close");
-      radio.setBandFrequency(RADIO_BAND_AM, radio.getMinFrequency());
+      radio.setBand(RADIO_BAND_AM);
       radio.setVolume(vol);
       radio.setMono(false);
       radio.setMute(false);
